@@ -1,0 +1,79 @@
+#include <iostream>
+#include <cstring>
+#include <stack>
+std::string ec;
+std::stack<long long>s;
+std::stack<long long>f;
+std::stack<char>operatii;
+std::pair<long long,int> numar(std::string ec,int i)
+{
+    long long ans=0;
+    while(i<ec.size()&&ec[i]>='0'&&ec[i]<='9')
+    {
+        ans*=10;
+        ans+=ec[i]-'0';
+        i++;
+    }
+    return std::make_pair(ans,--i);
+}
+void fa()
+{
+    long long x;
+    x=s.top();
+    s.pop();
+    if(operatii.top()=='+')
+    {
+        s.top()+=x;
+    }
+    else if(operatii.top()=='-')
+    {
+        s.top()-=x;
+    }
+    else if(operatii.top()=='*')
+    {
+        s.top()*=x;
+    }
+    operatii.pop();
+}
+int main()
+{
+    getline(std::cin,ec);
+    for(int i=0;i<ec.length();i++)
+    {
+        if(ec[i]=='(')
+        {
+            operatii.push('(');
+            i++;
+            std::pair<long long,int>r=numar(ec,i);
+            s.push(r.first);
+            i=r.second;
+        }
+        else if(ec[i]==')')
+        {
+            while(operatii.top()!='(')
+            {
+                fa();
+            }
+            operatii.pop();
+            //std::cout<<s.top()<<' '<<i<<'\n';
+        }
+        else if(ec[i]>='0'&&ec[i]<='9')
+        {
+            std::pair<long long,int>r=numar(ec,i);
+            s.push(r.first);
+            i=r.second;
+        }
+        else if(ec[i]=='-'||ec[i]=='+'||ec[i]=='*')
+        {
+            while(!operatii.empty()&&operatii.top()!='('&&((ec[i]=='+'||ec[i]=='-')||(ec[i]=='*'&&operatii.top()=='*'))) 
+                fa();
+            operatii.push(ec[i]);
+        }
+    }
+    while(!operatii.empty())
+    {
+        fa();
+    }
+    std::cout<<s.top();
+    return 0;
+}
